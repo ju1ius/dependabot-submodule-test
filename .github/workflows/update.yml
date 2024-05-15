@@ -1,0 +1,31 @@
+name: Update upstream submodule
+
+on:
+  pull_request:
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Copy data files
+        shell: bash
+        run: cp upstream/data.txt src/data.txt
+      # - name: Run tests
+      #   run: run-tests.sh
+      - name: Update pull-request
+        run: |
+          if git diff -q; then
+            git add .
+            git commit -m "[dependabot skip] rebuild data files"
+            git push
+          else
+            echo 'No changes detected'
+          fi
