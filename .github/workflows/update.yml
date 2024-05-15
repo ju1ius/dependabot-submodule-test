@@ -18,6 +18,10 @@ jobs:
       - name: Copy data files
         shell: bash
         run: cp upstream/data.txt src/data.txt
+      - name: Configure git
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
       # - name: Run tests
       #   run: run-tests.sh
       - name: Update pull-request
