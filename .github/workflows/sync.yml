@@ -20,6 +20,7 @@ jobs:
           git submodule update --remote
           cp upstream/data.txt src/data.txt
       - name: Create Pull Request
+        id: create-pr
         uses: peter-evans/create-pull-request@v6
         with:
           title: Automated updates
@@ -27,3 +28,14 @@ jobs:
           base: main
           branch: upstream-updates
           delete-branch: true
+      - name: Trigger ci workflow
+        if: ${{ steps.create-pr.outputs.pull-request-number }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci.yml',
+              ref: '${{ steps.create-pr.outputs.pull-request-head-sha }}',
+            })
