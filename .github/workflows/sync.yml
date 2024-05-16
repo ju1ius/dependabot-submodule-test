@@ -1,0 +1,29 @@
+name: Sync upstream submodule
+permissions:
+  contents: write
+  pull-requests: write
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 0 * * MON"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Sync submodule
+        run: |
+          git submodule update --remote
+          cp upstream/data.txt src/data.txt
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: Automated updates
+          commit-message: "[bot] updates upstream dependency"
+          base: main
+          branch: upstream-updates
+          delete-branch: true
